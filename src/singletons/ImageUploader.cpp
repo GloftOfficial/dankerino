@@ -315,6 +315,25 @@ void ImageUploader::upload(const QMimeData *source, ChannelPtr channel,
                 this->uploadQueue_.push(data);
                 file.close();
             }
+			else
+            {
+                channel->addMessage(makeSystemMessage(
+                    QString("Uploading file: %1").arg(localPath)));
+                QFile file(localPath);
+                bool isOkay = file.open(QIODevice::ReadOnly);
+                if (!isOkay)
+                {
+                    channel->addMessage(
+                        makeSystemMessage(QString("Failed to open file. :(")));
+                    this->uploadMutex_.unlock();
+                    return;
+                }
+                //TODO Change this to a buffered approach in the future
+                RawImageData data = {file.readAll(), mime.preferredSuffix(),localPath};
+                
+                this->uploadQueue_.push(data);
+                file.close();
+            }
         }
         if (!this->uploadQueue_.empty())
         {
