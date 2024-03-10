@@ -326,7 +326,7 @@ void ImageUploader::upload(const QMimeData *source, ChannelPtr channel,
                     channel->addMessage(
                         makeSystemMessage(QString("Failed to open file. :(")));
                     this->uploadMutex_.unlock();
-                    return;
+                    return false;
                 }
                 //TODO Change this to a buffered approach in the future
                 RawImageData data = {file.readAll(), mime.preferredSuffix(),localPath};
